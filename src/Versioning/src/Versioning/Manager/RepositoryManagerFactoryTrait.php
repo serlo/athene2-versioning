@@ -19,4 +19,3 @@ class RepositoryManagerFactoryTrait
         return $repositoryManager;
     }
 }
- 

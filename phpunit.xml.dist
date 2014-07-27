@@ -11,7 +11,7 @@
         backupGlobals="false"
         syntaxCheck="true"
         >
-    <testsuite name="Athene2 Common tests">
+    <testsuite name="Athene2 Versioning tests">
         <directory>./tests</directory>
     </testsuite>
     <filter>
