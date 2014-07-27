@@ -118,10 +118,15 @@ class RepositoryManager implements RepositoryManagerInterface
         $this->handleRevision($repository, $revision, $reason, 'reject');
     }
 
+
     /**
-     * {@inheritDoc}
+     * @param RepositoryInterface     $repository
+     * @param mixed|RevisionInterface $revision
+     * @param string                  $reason
+     * @param string                  $key
+     * @return void
      */
-    protected function handleRevision(RepositoryInterface $repository, $revision, $reason = '', $key)
+    protected function handleRevision(RepositoryInterface $repository, $revision, $reason, $key)
     {
         $this->hasPermission($repository, $key);
 
