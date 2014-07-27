@@ -37,6 +37,11 @@ class RepositoryManager implements RepositoryManagerInterface
     protected $objectManager;
 
     /**
+     * @var AuthorizationService
+     */
+    protected $authorizationService;
+
+    /**
      * @param AuthorizationService $authorizationService
      * @param ModuleOptions        $moduleOptions
      * @param ObjectManager        $objectManager
@@ -56,15 +61,7 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     public function checkoutRevision(RepositoryInterface $repository, $revision, $reason = '')
     {
-        $this->hasPermission($repository, 'checkout');
-
-        if (!$revision instanceof RevisionInterface) {
-            $revision = $this->findRevision($repository, $revision);
-        }
-
-        $repository->setCurrentRevision($revision);
-        $this->objectManager->persist($repository);
-        $this->triggerEvent('checkout', $repository, $revision, $reason);
+        $this->handleRevision($repository, $revision, $reason, 'checkout');
     }
 
     /**
@@ -118,14 +115,28 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     public function rejectRevision(RepositoryInterface $repository, $revision, $reason = '')
     {
+        $this->handleRevision($repository, $revision, $reason, 'reject');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function handleRevision(RepositoryInterface $repository, $revision, $reason = '', $key)
+    {
+        $this->hasPermission($repository, $key);
+
         if (!$revision instanceof RevisionInterface) {
             $revision = $this->findRevision($repository, $revision);
         }
 
-        $this->hasPermission($repository, 'reject');
-        $revision->setTrashed(true);
-        $this->objectManager->persist($revision);
-        $this->triggerEvent('reject', $repository, $revision, $reason);
+        if ($key == 'reject') {
+            $revision->setTrashed(true);
+            $this->objectManager->persist($revision);
+        } else {
+            $repository->setCurrentRevision($revision);
+            $this->objectManager->persist($repository);
+        }
+        $this->triggerEvent($key, $repository, $revision, $reason);
     }
 
     /**
