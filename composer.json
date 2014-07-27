@@ -8,7 +8,7 @@
         "zf2",
         "athene2",
         "core",
-        "common"
+        "versioning"
     ],
     "homepage": "https://github.com/serlo-org/athene2-versioning",
     "authors": [
