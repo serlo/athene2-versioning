@@ -13,7 +13,7 @@ use Common\Factory\AbstractOptionsFactory;
 class ModuleOptionsFactory extends AbstractOptionsFactory
 {
     /**
-     * @return string
+     * {@inheritDoc}
      */
     protected function getClassName()
     {
@@ -21,7 +21,7 @@ class ModuleOptionsFactory extends AbstractOptionsFactory
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     protected function getKeyName()
     {

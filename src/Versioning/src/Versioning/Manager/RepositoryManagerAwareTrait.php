@@ -19,9 +19,7 @@ trait RepositoryManagerAwareTrait
     protected $repositoryManager;
 
     /**
-     * Gets the RepositoryManager
-     *
-     * @return RepositoryManagerInterface $repositoryManager
+     * {@inheritDoc}
      */
     public function getRepositoryManager()
     {
@@ -29,14 +27,10 @@ trait RepositoryManagerAwareTrait
     }
 
     /**
-     * Sets the RepositoryManager
-     *
-     * @param RepositoryManagerInterface $repositoryManager
-     * @return self
+     * {@inheritDoc}
      */
     public function setRepositoryManager(RepositoryManagerInterface $repositoryManager)
     {
         $this->repositoryManager = $repositoryManager;
-        return $this;
     }
 }

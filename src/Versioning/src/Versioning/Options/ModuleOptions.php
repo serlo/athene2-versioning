@@ -4,12 +4,13 @@ namespace Versioning\Options;
 
 use Versioning\Exception;
 use Zend\Stdlib\AbstractOptions;
+use Versioning\Entity\RepositoryInterface;
 
 /**
  * Class ModuleOptions
  *
  * @package Versioning\Options
- * @author Aeneas Rekkas
+ * @author  Aeneas Rekkas
  */
 class ModuleOptions extends AbstractOptions
 {
@@ -34,7 +35,13 @@ class ModuleOptions extends AbstractOptions
         return $this->permissions;
     }
 
-    public function getPermission($repository, $action)
+    /**
+     * @param RepositoryInterface $repository
+     * @param string              $action
+     * @return string
+     * @throws Exception\RuntimeException
+     */
+    public function getPermission(RepositoryInterface $repository, $action)
     {
         $className = get_class($repository);
 

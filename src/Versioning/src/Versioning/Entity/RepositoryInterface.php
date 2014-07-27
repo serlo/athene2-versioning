@@ -31,7 +31,7 @@ interface RepositoryInterface
     public function getCurrentRevision();
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getId();
 

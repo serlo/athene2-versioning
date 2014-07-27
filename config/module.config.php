@@ -15,7 +15,7 @@ return [
     'di'              => [
         'instance' => [
             'preferences' => [
-                'Versioning\RepositoryManagerInterface' => 'Versioning\RepositoryManager'
+                'Versioning\Manager\RepositoryManagerInterface' => 'Versioning\RepositoryManager'
             ],
         ]
     ]

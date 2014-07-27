@@ -11,12 +11,13 @@ use Zend\Filter\FilterInterface;
  * Class HasCurrentRevisionCollectionFilter
  *
  * @package Versioning\Filter
- * @author Aeneas Rekkas
+ * @author  Aeneas Rekkas
  */
 class HasCurrentRevisionCollectionFilter implements FilterInterface
 {
     /**
-     * Returns the result of filtering $value
+     * Filters out all RepositoryInterfaces without a checked out revision
+     * contained in a RepositoryInterface Collection
      *
      * @param  mixed $value
      * @throws Exception\RuntimeException If filtering $value is impossible

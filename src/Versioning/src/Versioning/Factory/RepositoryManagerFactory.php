@@ -20,10 +20,7 @@ class RepositoryManagerFactory implements FactoryInterface
     use AuthorizationServiceFactoryTrait, EntityManagerFactoryTrait;
 
     /**
-     * Create service
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return mixed
+     * {@inheritDoc}
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {

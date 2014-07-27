@@ -56,27 +56,15 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     public function checkoutRevision(RepositoryInterface $repository, $revision, $reason = '')
     {
+        $this->hasPermission($repository, 'checkout');
+
         if (!$revision instanceof RevisionInterface) {
             $revision = $this->findRevision($repository, $revision);
         }
 
-        $user       = $this->authorizationService->getIdentity();
-        $permission = $this->moduleOptions->getPermission($repository, 'checkout');
-        $this->assertGranted($permission, $repository);
         $repository->setCurrentRevision($revision);
-
-        $this->getEventManager()->trigger(
-            'checkout',
-            $this,
-            [
-                'repository' => $repository,
-                'revision'   => $revision,
-                'actor'      => $user,
-                'reason'     => $reason
-            ]
-        );
-
         $this->objectManager->persist($repository);
+        $this->triggerEvent('checkout', $repository, $revision, $reason);
     }
 
     /**
@@ -84,33 +72,21 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     public function commitRevision(RepositoryInterface $repository, array $data)
     {
-        $author     = $this->authorizationService->getIdentity();
-        $permission = $this->moduleOptions->getPermission($repository, 'commit');
-        $revision   = $repository->createRevision();
+        $this->hasPermission($repository, 'commit');
 
-        $this->assertGranted($permission, $repository);
+        $author   = $this->authorizationService->getIdentity();
+        $revision = $repository->createRevision();
+
         $revision->setAuthor($author);
         $repository->addRevision($revision);
         $revision->setRepository($repository);
 
         foreach ($data as $key => $value) {
-            if (is_string($key) && is_string($value)) {
-                $revision->set($key, $value);
-            }
+            $revision->set($key, $value);
         }
 
-        $this->getEventManager()->trigger(
-            'commit',
-            $this,
-            [
-                'repository' => $repository,
-                'revision'   => $revision,
-                'data'       => $data,
-                'author'     => $author
-            ]
-        );
-
         $this->objectManager->persist($revision);
+        $this->triggerEvent('commit', $repository, $revision, null, $data);
 
         return $revision;
     }
@@ -146,22 +122,59 @@ class RepositoryManager implements RepositoryManagerInterface
             $revision = $this->findRevision($repository, $revision);
         }
 
-        $user       = $this->authorizationService->getIdentity();
-        $permission = $this->moduleOptions->getPermission($repository, 'reject');
-
-        $this->assertGranted($permission, $repository);
+        $this->hasPermission($repository, 'reject');
         $revision->setTrashed(true);
         $this->objectManager->persist($revision);
-        $this->getEventManager()->trigger(
-            'reject',
-            $this,
-            [
-                'repository' => $repository,
-                'revision'   => $revision,
-                'actor'      => $user,
-                'reason'     => $reason
-            ]
-        );
+        $this->triggerEvent('reject', $repository, $revision, $reason);
+    }
+
+    /**
+     * @param RepositoryInterface $repository
+     * @param string              $key
+     * @return void
+     */
+    protected function hasPermission(RepositoryInterface $repository, $key)
+    {
+        $permission = $this->moduleOptions->getPermission($repository, $key);
+        $this->assertGranted($permission, $repository);
+    }
+
+    /**
+     * @param string              $event
+     * @param RepositoryInterface $repository
+     * @param RevisionInterface   $revision
+     * @param string|null         $reason
+     * @param array|null          $data
+     * @return void
+     */
+    protected function triggerEvent(
+        $event,
+        RepositoryInterface $repository,
+        RevisionInterface $revision,
+        $reason = null,
+        $data = null
+    ) {
+        $identity = $this->authorizationService->getIdentity();
+        $params   = [
+            'repository' => $repository,
+            'revision'   => $revision
+        ];
+
+        if ($event == 'commit') {
+            $params['author'] = $identity;
+        } else {
+            $params['actor'] = $identity;
+        }
+
+        if ($reason) {
+            $params['reason'] = $reason;
+        }
+
+        if ($data) {
+            $params['data'] = $data;
+        }
+
+        $this->getEventManager()->trigger($event, $this, $params);
     }
 
     /**
@@ -173,8 +186,8 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     protected function assertGranted($permission, $context = null)
     {
-        if ($this->authorizationService->isGranted($permission, $context)) {
-            throw new UnauthorizedException('You have no permission to access this method.');
+        if (!$this->authorizationService->isGranted($permission, $context)) {
+            throw new UnauthorizedException(sprintf('You are missing permission %s.', $permission));
         }
     }
 }

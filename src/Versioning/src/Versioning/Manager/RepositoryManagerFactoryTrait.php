@@ -12,6 +12,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class RepositoryManagerFactoryTrait
 {
+    /**
+     * Returns the RepositoryManager
+     *
+     * @param ServiceLocatorInterface $serviceLocator
+     * @return RepositoryManagerInterface
+     */
     protected function getRepositoryManager(ServiceLocatorInterface $serviceLocator)
     {
         /* @var $repositoryManager RepositoryManagerInterface */

@@ -10,7 +10,6 @@ namespace Versioning\Manager;
  */
 interface RepositoryManagerAwareInterface
 {
-
     /**
      * Set repository manager
      *
