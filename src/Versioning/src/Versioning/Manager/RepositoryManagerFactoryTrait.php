@@ -10,7 +10,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @package Versioning\Manager
  * @author  Aeneas Rekkas
  */
-class RepositoryManagerFactoryTrait
+trait RepositoryManagerFactoryTrait
 {
     /**
      * Returns the RepositoryManager

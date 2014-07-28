@@ -8,7 +8,7 @@ use Versioning\Module;
  * Class ModuleTest
  *
  * @package CommonTest
- * @author Aeneas Rekkas
+ * @author  Aeneas Rekkas
  */
 class ModuleTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,5 +16,11 @@ class ModuleTest extends \PHPUnit_Framework_TestCase
     {
         $module = new Module();
         $this->assertInternalType('array', $module->getConfig());
+    }
+
+    public function testAutoloaderIsArray()
+    {
+        $module = new Module();
+        $this->assertInternalType('array', $module->getAutoloaderConfig());
     }
 }
