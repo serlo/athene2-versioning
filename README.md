@@ -17,6 +17,12 @@ to your composer.json.
 
 The versioning module enables you to manage repositories which contain revisions. Each repository has **n** revisions and one or zero HEAD revision. The HEAD revision is the current revision of that repository. The default implementation of the VersioningManager is **[Doctrine friendly](http://www.doctrine-project.org/)**!
 
+# Features
+
+* Doctrine implementation (using the ObjectManager)
+* Bundled with [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac) for authorization
+* Events
+
 ## Understanding how it works
 
 The versioning module consists of one `Versioning\Manager\VersioningManager`, who implements the `Versioning\Manager\VersioningManagerInterface`. The `Versioning\Entity\VersioningManager` manages models or entities which implement the `Versioning\Entity\RepositoryInterface` and the `Versioning\Entity\RevisionInterface`.
@@ -63,6 +69,15 @@ class Revision implements RevisionInterface
      * @var array
      */
     protected $data = [];
+
+    /**
+     * @param mixed $id
+     * @return void
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * {@inheritDoc}
@@ -224,3 +239,97 @@ class Repository implements RepositoryInterface
 ```
 
 Well, that wasn't so hard, was it?
+
+### Using the RepositoryManager
+
+The default `RepositoryManager` implementation is bundled with Doctrine, ZF2 EventManager and [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac).
+
+#### Setting up permissions
+
+Not everyone should be allowed to commit, reject and accept revisions, right? Therefore, the `RepositoryManager` is able to handle permissions via [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac)!
+
+To set up permissions, you will need to add some config data to your [module.config.php](http://framework.zend.com/manual/2.3/en/modules/zend.module-manager.intro.html):
+
+```php
+return [
+    // ...
+    'versioning'       => [
+        'permissions'  => [
+            // Use the classname of the revision class
+            // In the example above the namespace is missing, therefore the classname is only "Revision".
+            // This could be also "MyModule\Entity\Revision"
+            'Revision' => [
+            
+                // There are three actions which need authentication:
+                
+                // 'commit' gets checked when you call "commitRevision"
+                'commit'   => 'revision.create',
+                
+                // 'checkout' gets checked when you call "checkoutRevision"
+                'checkout' => 'revision.checkout',
+                
+                // 'reject' gets checked when you call "rejectRevision"
+                'reject'   => 'revision.trash'
+                
+                // Name the permissions whatever you like. Just be aware that they are registered in zfc-rbac!
+                // 'commit' gets checked when you call "commitRevision"
+                // 'commit'   => 'mymodule.entity.revision.commit',
+                // 'checkout' => 'mymodule.entity.revision.checkout',
+                // 'reject'   => 'mymodule.entity.revision.trash'
+            ]
+        ]
+    ]
+    // ...
+];
+```
+
+**Important:** The revision is always passed to [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac) as a context object for usage with e.g. Assertions! 
+
+#### Setting up the EventManager
+
+Apart from checking permissions, the `VersioningManager` is also able to trigger ZF2 Events. Let's take an example:
+
+... to be done
+
+#### Create a new Revision and fill it with data!
+
+```php
+// Let's create a repository first
+$repository = new Repository();
+
+// Now we need the RepositoryManager
+$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+
+// Let's create our first revision!
+$revision = $repositoryManager->commitRevision($repository, ['foo' => 'bar'], 'I added some stuff');
+
+// And check it out (set as HEAD / current revision)
+// We can also add a short message, why we checked out this revision!
+$repositoryManager->checkoutRevision($revision, 'That\'s a nice reason, isn\'t it?');
+
+// Now, let's make those changes persistent!
+$repositoryManager->flush();
+```
+
+#### Trash a revision
+
+Someone made a mistake? Just reject the revision!
+
+```php
+// Now we need the RepositoryManager
+$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+
+// Let's find the revision!
+$revision = $repositoryManager->rejectRevision($repository, 5, 'Sorry but there are too many mistakes!');
+
+// Now, let's make those changes persistent!
+$repositoryManager->flush();
+```
+
+## To be done
+
+There are a more things to come:
+
+* A beautiful UI to manage your repositories
+* A RESTful API
+* Better docs
