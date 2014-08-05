@@ -148,7 +148,7 @@ class Revision implements RevisionInterface
 
 #### RepositoryInterface
 
-```
+```php
 <?php
 
 use Versioning\Entity\RepositoryInterface;
