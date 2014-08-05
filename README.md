@@ -5,13 +5,16 @@ athene2-versioning
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/?branch=master)
 
-# Installation
+## Installation
 
-Install this module by adding
+athene2-versioning only officially supports installation through Composer. For Composer documentation, please refer to
+[getcomposer.org](http://getcomposer.org/).
 
-`"serlo-org/athene2-versioning": ">=2.0",`
+Install the module:
 
-to your composer.json.
+```sh
+$ php composer.phar require serlo-org/athene2-versioning:~2.0
+```
 
 # Using the versioning module
 
@@ -28,6 +31,8 @@ The versioning module enables you to manage repositories which contain revisions
 The versioning module consists of one `Versioning\Manager\VersioningManager`, who implements the `Versioning\Manager\VersioningManagerInterface`. The `Versioning\Entity\VersioningManager` manages models or entities which implement the `Versioning\Entity\RepositoryInterface` and the `Versioning\Entity\RevisionInterface`.
 
 ### Let's implement those entity interfaces!
+
+You can find example implementations [here](data)!
 
 #### RevisionInterface
 
