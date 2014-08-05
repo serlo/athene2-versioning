@@ -28,7 +28,7 @@ The versioning module enables you to manage repositories which contain revisions
 
 ## Understanding how it works
 
-The versioning module consists of one `Versioning\Manager\VersioningManager`, who implements the `Versioning\Manager\VersioningManagerInterface`. The `Versioning\Entity\VersioningManager` manages models or entities which implement the `Versioning\Entity\RepositoryInterface` and the `Versioning\Entity\RevisionInterface`.
+The versioning module consists of one `Versioning\Manager\VersioningManager`, who implements the `Versioning\Manager\VersioningManagerInterface`. He manages models or entities which implement the `Versioning\Entity\RepositoryInterface` and the `Versioning\Entity\RevisionInterface`.
 
 ### Let's implement those entity interfaces!
 
@@ -366,7 +366,7 @@ There are also other events available, like:
 * `VersioningEvent::COMMIT` and `VersioningEvent::COMMIT_UNAUTHORIZED`
 * `VersioningEvent::REJECT` and `VersioningEvent::REJECT_UNAUTHORIZED`
 * `VersioningEvent::CHECKOUT` and `VersioningEvent::CHECKOUT_UNAUTHORIZED`
-```
+
 
 ## To be done
 
