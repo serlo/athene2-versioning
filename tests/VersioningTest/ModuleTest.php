@@ -1,13 +1,13 @@
 <?php
 
-namespace CommonTest;
+namespace VersioningTest;
 
 use Versioning\Module;
 
 /**
  * Class ModuleTest
  *
- * @package CommonTest
+ * @package VersioningTest
  * @author  Aeneas Rekkas
  */
 class ModuleTest extends \PHPUnit_Framework_TestCase

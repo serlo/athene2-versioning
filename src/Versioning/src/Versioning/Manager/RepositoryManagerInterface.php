@@ -12,7 +12,7 @@ use Versioning\Exception;
  * Interface RepositoryManagerInterface
  *
  * @package Versioning\Manager
- * @author Aeneas Rekkas
+ * @author  Aeneas Rekkas
  */
 interface RepositoryManagerInterface extends EventManagerAwareInterface, Flushable
 {
@@ -24,23 +24,24 @@ interface RepositoryManagerInterface extends EventManagerAwareInterface, Flushab
      *
      * @param RepositoryInterface   $repository
      * @param int|RevisionInterface $revision
-     * @param string                $reason
+     * @param string                $message
      * @return mixed
      * @throws Exception\RevisionNotFoundException
      */
-    public function checkoutRevision(RepositoryInterface $repository, $revision, $reason = '');
+    public function checkoutRevision(RepositoryInterface $repository, $revision, $message = '');
 
     /**
      * Creates a new revision and adds it to the repository.
      * <code>
-     * $repositoryManager->commitRevision($repository, ['foo' => 'bar', 'acme' => 'bar']);
+     * $repositoryManager->commitRevision($repository, ['foo' => 'bar', 'acme' => 'bar'], "my reason");
      * </code>
      *
      * @param RepositoryInterface $repository
      * @param array               $data
+     * @param string              $message
      * @return RevisionInterface
      */
-    public function commitRevision(RepositoryInterface $repository, array $data);
+    public function commitRevision(RepositoryInterface $repository, array $data, $message = '');
 
     /**
      * Finds an revision by its id.
@@ -64,8 +65,8 @@ interface RepositoryManagerInterface extends EventManagerAwareInterface, Flushab
      *
      * @param RepositoryInterface   $repository
      * @param int|RevisionInterface $revision
-     * @param string                $reason
+     * @param string                $message
      * @return void
      */
-    public function rejectRevision(RepositoryInterface $repository, $revision, $reason = '');
+    public function rejectRevision(RepositoryInterface $repository, $revision, $message = '');
 }

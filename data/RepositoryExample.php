@@ -1,16 +1,14 @@
 <?php
-namespace VersioningTest\Asset;
 
 use Versioning\Entity\RepositoryInterface;
 use Versioning\Entity\RevisionInterface;
 
 /**
- * Class RepositoryFake
+ * Class Repository
  *
- * @package VersioningTest\Asset
- * @author  Aeneas Rekkas
+ * @author Aeneas Rekkas
  */
-class RepositoryFake implements RepositoryInterface
+class RepositoryExample implements RepositoryInterface
 {
     /**
      * @var array|RevisionInterface[]
@@ -40,7 +38,7 @@ class RepositoryFake implements RepositoryInterface
      */
     public function createRevision()
     {
-        return new RevisionFake();
+        return new Revision();
     }
 
     /**

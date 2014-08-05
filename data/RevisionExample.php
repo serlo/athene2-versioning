@@ -1,18 +1,15 @@
 <?php
 
-namespace VersioningTest\Asset;
-
 use Versioning\Entity\RepositoryInterface;
 use Versioning\Entity\RevisionInterface;
 use ZfcRbac\Identity\IdentityInterface;
 
 /**
- * Class RevisionFake
+ * Class Revision
  *
- * @package CommonTest\Asset
- * @author  Aeneas Rekkas
+ * @author Aeneas Rekkas
  */
-class RevisionFake implements RevisionInterface
+class RevisionExample implements RevisionInterface
 {
     /**
      * @var mixed

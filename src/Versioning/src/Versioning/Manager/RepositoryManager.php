@@ -5,6 +5,7 @@ namespace Versioning\Manager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Versioning\Entity\RepositoryInterface;
 use Versioning\Entity\RevisionInterface;
+use Versioning\Event\VersioningEvent;
 use Versioning\Options\ModuleOptions;
 use Zend\EventManager\EventManagerAwareTrait;
 use ZfcRbac\Exception\UnauthorizedException;
@@ -59,31 +60,31 @@ class RepositoryManager implements RepositoryManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function checkoutRevision(RepositoryInterface $repository, $revision, $reason = '')
+    public function checkoutRevision(RepositoryInterface $repository, $revision, $message = '')
     {
-        $this->handleRevision($repository, $revision, $reason, 'checkout');
+        $this->handleRevision($repository, $revision, $message, VersioningEvent::CHECKOUT);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function commitRevision(RepositoryInterface $repository, array $data)
+    public function commitRevision(RepositoryInterface $repository, array $data, $message = '')
     {
-        $this->hasPermission($repository, 'commit');
-
         $author   = $this->authorizationService->getIdentity();
         $revision = $repository->createRevision();
 
-        $revision->setAuthor($author);
         $repository->addRevision($revision);
         $revision->setRepository($repository);
+        $revision->setAuthor($author);
+        $this->hasPermission($revision, VersioningEvent::COMMIT);
 
         foreach ($data as $key => $value) {
             $revision->set($key, $value);
         }
 
         $this->objectManager->persist($revision);
-        $this->triggerEvent('commit', $repository, $revision, null, $data);
+        $this->objectManager->persist($repository);
+        $this->triggerEvent('commit', $repository, $revision, $message, $data);
 
         return $revision;
     }
@@ -113,97 +114,89 @@ class RepositoryManager implements RepositoryManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function rejectRevision(RepositoryInterface $repository, $revision, $reason = '')
+    public function rejectRevision(RepositoryInterface $repository, $revision, $message = '')
     {
-        $this->handleRevision($repository, $revision, $reason, 'reject');
+        $this->handleRevision($repository, $revision, $message, VersioningEvent::REJECT);
     }
 
 
     /**
      * @param RepositoryInterface     $repository
      * @param mixed|RevisionInterface $revision
-     * @param string                  $reason
-     * @param string                  $key
+     * @param string                  $message
+     * @param string                  $event
      * @return void
      */
-    protected function handleRevision(RepositoryInterface $repository, $revision, $reason, $key)
+    protected function handleRevision(RepositoryInterface $repository, $revision, $message, $event)
     {
-        $this->hasPermission($repository, $key);
-
         if (!$revision instanceof RevisionInterface) {
             $revision = $this->findRevision($repository, $revision);
         }
 
-        if ($key == 'reject') {
+        $revision->setRepository($repository);
+        $repository->addRevision($revision);
+
+        $this->hasPermission($revision, $event);
+
+        if ($event === VersioningEvent::REJECT) {
             $revision->setTrashed(true);
             $this->objectManager->persist($revision);
         } else {
             $repository->setCurrentRevision($revision);
             $this->objectManager->persist($repository);
         }
-        $this->triggerEvent($key, $repository, $revision, $reason);
+
+        $this->triggerEvent($event, $repository, $revision, $message);
     }
 
     /**
-     * @param RepositoryInterface $repository
-     * @param string              $key
+     * @param RevisionInterface $revision
+     * @param string            $event
      * @return void
+     * @throws UnauthorizedException
      */
-    protected function hasPermission(RepositoryInterface $repository, $key)
+    protected function hasPermission(RevisionInterface $revision, $event)
     {
-        $permission = $this->moduleOptions->getPermission($repository, $key);
-        $this->assertGranted($permission, $repository);
+        $permission = $this->moduleOptions->getPermission($revision->getRepository(), $event);
+
+        if (!$this->authorizationService->isGranted($permission, $revision)) {
+
+            switch ($event) {
+                case VersioningEvent::REJECT:
+                    $event = VersioningEvent::REJECT_UNAUTHORIZED;
+                    break;
+                case VersioningEvent::COMMIT:
+                    $event = VersioningEvent::COMMIT_UNAUTHORIZED;
+                    break;
+                case VersioningEvent::CHECKOUT:
+                    $event = VersioningEvent::CHECKOUT_UNAUTHORIZED;
+                    break;
+            }
+
+            $this->triggerEvent($event, $revision->getRepository(), $revision);
+
+            throw new UnauthorizedException(sprintf('You are missing permission %s.', $permission));
+        }
     }
 
     /**
-     * @param string              $event
+     * @param string              $eventName
      * @param RepositoryInterface $repository
      * @param RevisionInterface   $revision
-     * @param string|null         $reason
-     * @param array|null          $data
+     * @param string              $message
+     * @param array               $data
      * @return void
      */
     protected function triggerEvent(
-        $event,
+        $eventName,
         RepositoryInterface $repository,
         RevisionInterface $revision,
-        $reason = null,
-        $data = null
+        $message = '',
+        $data = []
     ) {
         $identity = $this->authorizationService->getIdentity();
-        $params   = [
-            'repository' => $repository,
-            'revision'   => $revision
-        ];
-
-        if ($event == 'commit') {
-            $params['author'] = $identity;
-        } else {
-            $params['actor'] = $identity;
-        }
-
-        if ($reason) {
-            $params['reason'] = $reason;
-        }
-
-        if ($data) {
-            $params['data'] = $data;
-        }
-
-        $this->getEventManager()->trigger($event, $this, $params);
-    }
-
-    /**
-     * Throws an exception if a permission isn't granted
-     *
-     * @param string $permission
-     * @param mixed  $context
-     * @throws UnauthorizedException
-     */
-    protected function assertGranted($permission, $context = null)
-    {
-        if (!$this->authorizationService->isGranted($permission, $context)) {
-            throw new UnauthorizedException(sprintf('You are missing permission %s.', $permission));
-        }
+        $event    = new VersioningEvent($identity, $repository, $revision, $this, $message, $data);
+        $event->setName($eventName);
+        $this->getEventManager()->trigger($eventName, $this, $event);
     }
 }

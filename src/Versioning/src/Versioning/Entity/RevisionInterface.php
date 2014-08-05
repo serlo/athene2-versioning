@@ -35,12 +35,19 @@ interface RevisionInterface
     public function setRepository(RepositoryInterface $repository);
 
     /**
+     * Gets the author
+     *
+     * @return IdentityInterface
+     */
+    public function getAuthor();
+
+    /**
      * Sets the author
      *
-     * @param IdentityInterface $user
+     * @param IdentityInterface $author
      * @return void
      */
-    public function setAuthor(IdentityInterface $user);
+    public function setAuthor(IdentityInterface $author);
 
     /**
      * Sets the trashed attribute

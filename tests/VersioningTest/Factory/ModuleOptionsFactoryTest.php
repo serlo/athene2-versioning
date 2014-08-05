@@ -25,32 +25,11 @@ class ModuleOptionsFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateService()
     {
-        $permissions = [
-            'VersioningTest\Asset\RepositoryFake' => [
-                'checkout' => 'checkout.permission'
-            ]
-        ];
-        $config      = [
-            'versioning' => [
-                'permissions' => $permissions
-            ]
-        ];
+        $config      = ['versioning' => []];
         $service     = $this->executePermissionTest($config);
 
         $this->assertInstanceOf('Versioning\Options\ModuleOptions', $service);
-        $this->assertEquals($permissions, $service->getPermissions());
-        $this->assertEquals('checkout.permission', $service->getPermission($this->repository, 'checkout'));
-    }
-
-    public function testCreateServiceWithoutConfig()
-    {
-        $this->setExpectedException('Versioning\Exception\RuntimeException');
-
-        $service = $this->executePermissionTest();
-
-        $this->assertInstanceOf('Versioning\Options\ModuleOptions', $service);
-        $this->assertEquals([], $service->getPermissions());
-        $this->assertEquals('checkout.permission', $service->getPermission($this->repository, 'checkout'));
+        $this->assertEquals([] , $service->getPermissions());
     }
 
     protected function executePermissionTest($config = null)
@@ -63,8 +42,6 @@ class ModuleOptionsFactoryTest extends \PHPUnit_Framework_TestCase
 
         /* @var $service ModuleOptions */
         $service = $factory->createService($serviceManager);
-
-
         return $service;
     }
 }

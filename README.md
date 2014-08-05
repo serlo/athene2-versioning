@@ -9,7 +9,7 @@ athene2-versioning
 
 Install this module by adding
 
-`"serlo-org/athene2-versioning": "~1.0",`
+`"serlo-org/athene2-versioning": ">=2.0",`
 
 to your composer.json.
 
@@ -114,6 +114,14 @@ class Revision implements RevisionInterface
     /**
      * {@inheritDoc}
      */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setTrashed($trash)
     {
         $this->trashed = (bool)$trash;
@@ -140,7 +148,7 @@ class Revision implements RevisionInterface
      */
     public function get($key)
     {
-        isset($this->data[$key]) ? $this->data[$key] : null;
+        return isset($this->data[$key]) ? $this->data[$key] : null;
     }
 }
 
@@ -263,19 +271,16 @@ return [
                 // There are three actions which need authentication:
                 
                 // 'commit' gets checked when you call "commitRevision"
-                'commit'   => 'revision.create',
+                ModuleOptions::KEY_PERMISSION_COMMIT  => 'revision.create',
                 
                 // 'checkout' gets checked when you call "checkoutRevision"
-                'checkout' => 'revision.checkout',
+                ModuleOptions::KEY_PERMISSION_CHECKOUT => 'revision.checkout',
                 
                 // 'reject' gets checked when you call "rejectRevision"
-                'reject'   => 'revision.trash'
+                ModuleOptions::KEY_PERMISSION_REJECT   => 'revision.trash'
                 
                 // Name the permissions whatever you like. Just be aware that they are registered in zfc-rbac!
-                // 'commit' gets checked when you call "commitRevision"
-                // 'commit'   => 'mymodule.entity.revision.commit',
-                // 'checkout' => 'mymodule.entity.revision.checkout',
-                // 'reject'   => 'mymodule.entity.revision.trash'
+                // ModuleOptions::KEY_PERMISSION_COMMIT   => 'mymodule.entity.revision.commit',
             ]
         ]
     ]
@@ -283,13 +288,7 @@ return [
 ];
 ```
 
-**Important:** The revision is always passed to [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac) as a context object for usage with e.g. Assertions! 
-
-#### Setting up the EventManager
-
-Apart from checking permissions, the `VersioningManager` is also able to trigger ZF2 Events. Let's take an example:
-
-... to be done
+**Important:** The revision is always passed to [zfc-rbac](https://github.com/ZF-Commons/zfc-rbac) as a context object for usage with e.g. Assertions!
 
 #### Create a new Revision and fill it with data!
 
@@ -319,11 +318,49 @@ Someone made a mistake? Just reject the revision!
 // Now we need the RepositoryManager
 $repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
 
-// Let's find the revision!
 $revision = $repositoryManager->rejectRevision($repository, 5, 'Sorry but there are too many mistakes!');
 
 // Now, let's make those changes persistent!
 $repositoryManager->flush();
+```
+
+#### Check out a revision
+
+Do you approve of a certain revision? Go ahead and check it out!
+
+```php
+// Now we need the RepositoryManager
+$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+
+$revision = $repositoryManager->checkoutRevision($repository, 5, 'Fine job!');
+
+// Now, let's make those changes persistent!
+$repositoryManager->flush();
+```
+
+#### Hooking into Events
+
+The VersioningManager fires events for both failure and success:
+
+```php
+$eventManager = $repositoryManager->getEventManager();
+
+$eventManager->attach(VersioningEvent::COMMIT, function(VersioningEvent $event) {
+    echo "I just committed a new revision with a cool message: " . $event->getMessage();
+});
+
+$eventManager->attach(VersioningEvent::COMMIT_UNAUTHORIZED, function(VersioningEvent $event) {
+    echo "I just committed a new revision but didn't have the rights to do so!";
+});
+
+$repositoryManager->commitRevision($repository, $data, $message);
+```
+
+There are also other events available, like:
+
+* `VersioningEvent::COMMIT` and `VersioningEvent::COMMIT_UNAUTHORIZED`
+* `VersioningEvent::REJECT` and `VersioningEvent::REJECT_UNAUTHORIZED`
+* `VersioningEvent::CHECKOUT` and `VersioningEvent::CHECKOUT_UNAUTHORIZED`
 ```
 
 ## To be done
