@@ -2,10 +2,10 @@
 
 namespace Versioning\Filter;
 
-use Doctrine\Common\Collections\Collection;
 use Versioning\Entity\RepositoryInterface;
 use Zend\Filter\Exception;
 use Zend\Filter\FilterInterface;
+use Zend\Stdlib\Guard\ArrayOrTraversableGuardTrait;
 
 /**
  * Class HasCurrentRevisionCollectionFilter
@@ -15,6 +15,8 @@ use Zend\Filter\FilterInterface;
  */
 class HasCurrentRevisionCollectionFilter implements FilterInterface
 {
+    use ArrayOrTraversableGuardTrait;
+
     /**
      * Filters out all RepositoryInterfaces without a checked out revision
      * contained in a RepositoryInterface Collection
@@ -25,17 +27,9 @@ class HasCurrentRevisionCollectionFilter implements FilterInterface
      */
     public function filter($value)
     {
-        if (!$value instanceof Collection) {
-            throw new Exception\RuntimeException(sprintf(
-                'Expected Collection but got %s',
-                is_object($value) ? get_class($value) : gettype($value)
-            ));
-        }
-
-        return $value->filter(
-            function (RepositoryInterface $repository) {
-                return $repository->hasCurrentRevision();
-            }
-        );
+        $this->guardForArrayOrTraversable($value);
+        return array_filter($value, function (RepositoryInterface $repository) {
+            return $repository->hasCurrentRevision();
+        });
     }
 }

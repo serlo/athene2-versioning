@@ -140,4 +140,3 @@ class VersioningEvent extends Event
         return $this->revision;
     }
 }
- 
