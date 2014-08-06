@@ -2,8 +2,6 @@
 
 namespace Versioning\Entity;
 
-use Doctrine\Common\Collections\Collection;
-
 /**
  * Interface RepositoryInterface
  *
@@ -38,7 +36,7 @@ interface RepositoryInterface
     /**
      * Returns the revisions
      *
-     * @return Collection|RevisionInterface[]
+     * @return RevisionInterface[]
      */
     public function getRevisions();
 

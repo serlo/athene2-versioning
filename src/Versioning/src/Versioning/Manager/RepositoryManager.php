@@ -73,10 +73,14 @@ class RepositoryManager implements RepositoryManagerInterface
         $author   = $this->authorizationService->getIdentity();
         $revision = $repository->createRevision();
 
+        $this->hasPermission($repository, $revision, VersioningEvent::COMMIT);
+
         $repository->addRevision($revision);
         $revision->setRepository($repository);
-        $revision->setAuthor($author);
-        $this->hasPermission($revision, VersioningEvent::COMMIT);
+
+        if ($author) {
+            $revision->setAuthor($author);
+        }
 
         foreach ($data as $key => $value) {
             $revision->set($key, $value);
@@ -84,7 +88,7 @@ class RepositoryManager implements RepositoryManagerInterface
 
         $this->objectManager->persist($revision);
         $this->objectManager->persist($repository);
-        $this->triggerEvent('commit', $repository, $revision, $message, $data);
+        $this->triggerEvent(VersioningEvent::COMMIT, $repository, $revision, $message, $data);
 
         return $revision;
     }
@@ -92,15 +96,19 @@ class RepositoryManager implements RepositoryManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function findRevision(RepositoryInterface $repository, $id)
+    public function findRevision(RepositoryInterface $repository, $revision)
     {
-        foreach ($repository->getRevisions() as $revision) {
-            if ($revision->getId() == $id) {
-                return $revision;
+        if ($revision instanceof RevisionInterface) {
+            return $revision;
+        }
+
+        foreach ($repository->getRevisions() as $current) {
+            if ($current->getId() == $revision) {
+                return $current;
             }
         }
 
-        throw new Exception\RevisionNotFoundException(sprintf('Revision "%d" not found', $id));
+        throw new Exception\RevisionNotFoundException(sprintf('Revision with id "%d" not found.', $revision));
     }
 
     /**
@@ -129,14 +137,12 @@ class RepositoryManager implements RepositoryManagerInterface
      */
     protected function handleRevision(RepositoryInterface $repository, $revision, $message, $event)
     {
-        if (!$revision instanceof RevisionInterface) {
-            $revision = $this->findRevision($repository, $revision);
-        }
+        $revision = $this->findRevision($repository, $revision);
+
+        $this->hasPermission($repository, $revision, $event);
 
         $revision->setRepository($repository);
         $repository->addRevision($revision);
-
-        $this->hasPermission($revision, $event);
 
         if ($event === VersioningEvent::REJECT) {
             $revision->setTrashed(true);
@@ -150,14 +156,15 @@ class RepositoryManager implements RepositoryManagerInterface
     }
 
     /**
-     * @param RevisionInterface $revision
-     * @param string            $event
+     * @param RepositoryInterface $repository
+     * @param RevisionInterface   $revision
+     * @param string              $event
      * @return void
      * @throws UnauthorizedException
      */
-    protected function hasPermission(RevisionInterface $revision, $event)
+    protected function hasPermission(RepositoryInterface $repository, RevisionInterface $revision, $event)
     {
-        $permission = $this->moduleOptions->getPermission($revision->getRepository(), $event);
+        $permission = $this->moduleOptions->getPermission($repository, $event);
 
         if (!$this->authorizationService->isGranted($permission, $revision)) {
 
@@ -173,9 +180,11 @@ class RepositoryManager implements RepositoryManagerInterface
                     break;
             }
 
-            $this->triggerEvent($event, $revision->getRepository(), $revision);
+            $this->triggerEvent($event, $repository, $revision);
 
-            throw new UnauthorizedException(sprintf('You are missing permission %s.', $permission));
+            throw new UnauthorizedException(sprintf(
+                'You are missing permission "%s" for this event %s.', $permission, $event
+            ));
         }
     }
 
@@ -195,7 +204,7 @@ class RepositoryManager implements RepositoryManagerInterface
         $data = []
     ) {
         $identity = $this->authorizationService->getIdentity();
-        $event    = new VersioningEvent($identity, $repository, $revision, $this, $message, $data);
+        $event    = new VersioningEvent($repository, $revision, $this, $message, $data, $identity);
         $event->setName($eventName);
         $this->getEventManager()->trigger($eventName, $this, $event);
     }

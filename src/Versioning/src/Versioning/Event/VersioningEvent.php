@@ -77,12 +77,12 @@ class VersioningEvent extends Event
     protected $identity;
 
     public function __construct(
-        IdentityInterface $identity,
         RepositoryInterface $repository,
         RevisionInterface $revision,
         RepositoryManagerInterface $repositoryManager,
         $message = '',
-        $data = []
+        $data = [],
+        IdentityInterface $identity = null
     ) {
         $this->identity          = $identity;
         $this->repository        = $repository;

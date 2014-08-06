@@ -22,7 +22,7 @@ class VersioningEventTest extends \PHPUnit_Framework_TestCase
         $message           = 'foobar';
         $data              = ['foo' => 'bar'];
 
-        $event = new VersioningEvent($identity, $repository, $revision, $repositoryManager, $message, $data);
+        $event = new VersioningEvent($repository, $revision, $repositoryManager, $message, $data, $identity);
 
         $this->assertSame($identity, $event->getIdentity());
         $this->assertSame($repository, $event->getRepository());

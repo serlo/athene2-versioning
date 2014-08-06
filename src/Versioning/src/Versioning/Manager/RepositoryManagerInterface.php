@@ -22,9 +22,9 @@ interface RepositoryManagerInterface extends EventManagerAwareInterface, Flushab
      * $repositoryManager->checkoutRevision($repository, 123, "my reason");
      * </code>
      *
-     * @param RepositoryInterface   $repository
-     * @param int|RevisionInterface $revision
-     * @param string                $message
+     * @param RepositoryInterface     $repository
+     * @param mixed|RevisionInterface $revision
+     * @param string                  $message
      * @return mixed
      * @throws Exception\RevisionNotFoundException
      */
@@ -49,12 +49,12 @@ interface RepositoryManagerInterface extends EventManagerAwareInterface, Flushab
      * $repositoryManager->findRevision($repository, 123);
      * </code>
      *
-     * @param RepositoryInterface   $repository
-     * @param int|RevisionInterface $id
+     * @param RepositoryInterface     $repository
+     * @param mixed|RevisionInterface $revision
      * @return RevisionInterface
      * @throws Exception\RevisionNotFoundException
      */
-    public function findRevision(RepositoryInterface $repository, $id);
+    public function findRevision(RepositoryInterface $repository, $revision);
 
 
     /**
