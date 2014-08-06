@@ -86,7 +86,9 @@ class ModuleOptions extends AbstractOptions
             throw new Exception\RuntimeException(sprintf('Permission for repository "%s" not found', $className));
         } elseif (!isset($this->permissions[$className][$key])) {
             throw new Exception\RuntimeException(sprintf(
-                'Permission action "%s" for object "%s" not found', $key, $className
+                'Permission action "%s" for object "%s" not found',
+                $key,
+                $className
             ));
         }
 

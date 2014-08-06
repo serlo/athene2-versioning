@@ -183,7 +183,9 @@ class RepositoryManager implements RepositoryManagerInterface
             $this->triggerEvent($event, $repository, $revision);
 
             throw new UnauthorizedException(sprintf(
-                'You are missing permission "%s" for this event %s.', $permission, $event
+                'You are missing permission "%s" for this event %s.',
+                $permission,
+                $event
             ));
         }
     }
