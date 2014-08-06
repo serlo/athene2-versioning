@@ -309,7 +309,7 @@ $revision = $repositoryManager->commitRevision($repository, ['foo' => 'bar'], 'I
 
 // And check it out (set as HEAD / current revision)
 // We can also add a short message, why we checked out this revision!
-$repositoryManager->checkoutRevision($revision, 'That\'s a nice reason, isn\'t it?');
+$repositoryManager->checkoutRevision($repository, $revision, 'That\'s a nice reason, isn\'t it?');
 
 // Now, let's make those changes persistent!
 $repositoryManager->flush();
