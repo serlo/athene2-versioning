@@ -4,6 +4,10 @@ athene2-versioning
 [![Build Status](https://travis-ci.org/serlo-org/athene2-versioning.svg)](https://travis-ci.org/serlo-org/athene2-versioning)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/serlo-org/athene2-versioning/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/serlo-org/athene2-versioning/v/stable.svg)](https://packagist.org/packages/serlo-org/athene2-versioning)
+[![Latest Unstable Version](https://poser.pugx.org/serlo-org/athene2-versioning/v/unstable.svg)](https://packagist.org/packages/serlo-org/athene2-versioning)
+[![License](https://poser.pugx.org/serlo-org/athene2-versioning/license.svg)](https://packagist.org/packages/serlo-org/athene2-versioning)
+[![Total Downloads](https://poser.pugx.org/serlo-org/athene2-versioning/downloads.svg)](https://packagist.org/packages/serlo-org/athene2-versioning)
 
 ## Installation
 
