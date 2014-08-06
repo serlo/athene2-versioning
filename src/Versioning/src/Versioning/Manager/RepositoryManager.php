@@ -11,7 +11,6 @@ use Zend\EventManager\EventManagerAwareTrait;
 use ZfcRbac\Exception\UnauthorizedException;
 use ZfcRbac\Service\AuthorizationService;
 use Versioning\Exception;
-use ZfcRbac\Service\AuthorizationServiceInterface;
 
 /**
  * Class RepositoryManager
@@ -44,12 +43,12 @@ class RepositoryManager implements RepositoryManagerInterface
     protected $authorizationService;
 
     /**
-     * @param AuthorizationServiceInterface $authorizationService
-     * @param ModuleOptions                 $moduleOptions
-     * @param ObjectManager                 $objectManager
+     * @param AuthorizationService $authorizationService
+     * @param ModuleOptions        $moduleOptions
+     * @param ObjectManager        $objectManager
      */
     public function __construct(
-        AuthorizationServiceInterface $authorizationService,
+        AuthorizationService $authorizationService,
         ModuleOptions $moduleOptions,
         ObjectManager $objectManager
     ) {
