@@ -8,6 +8,8 @@ use Versioning\Manager\RepositoryManager;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Versioning\Options\ModuleOptions;
+use ZfcRbac\Service\AuthorizationServiceInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Class RepositoryManagerFactory
@@ -26,7 +28,9 @@ class RepositoryManagerFactory implements FactoryInterface
     {
         /* @var $moduleOptions ModuleOptions */
         $moduleOptions        = $serviceLocator->get('Versioning\Options\ModuleOptions');
+        /* @var $objectManager ObjectManager */
         $objectManager        = $this->getEntityManager($serviceLocator);
+        /* @var $authorizationService AuthorizationServiceInterface */
         $authorizationService = $this->getAuthorizationService($serviceLocator);
 
         return new RepositoryManager($authorizationService, $moduleOptions, $objectManager);
