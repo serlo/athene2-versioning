@@ -39,8 +39,8 @@ You can find example implementations [here](data)!
 ```php
 <?php
 
-use Versioning\Entity\RepositoryInterface;
-use Versioning\Entity\RevisionInterface;
+use Athene2\Versioning\Entity\RepositoryInterface;
+use Athene2\Versioning\Entity\RevisionInterface;
 use ZfcRbac\Identity\IdentityInterface;
 
 /**
@@ -164,8 +164,8 @@ class Revision implements RevisionInterface
 ```php
 <?php
 
-use Versioning\Entity\RepositoryInterface;
-use Versioning\Entity\RevisionInterface;
+use Athene2\Versioning\Entity\RepositoryInterface;
+use Athene2\Versioning\Entity\RevisionInterface;
 
 class Repository implements RepositoryInterface
 {
@@ -302,7 +302,7 @@ return [
 $repository = new Repository();
 
 // Now we need the RepositoryManager
-$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+$repositoryManager = $serviceManager->get('Athene2\Versioning\Manager\VersioningManager');
 
 // Let's create our first revision!
 $revision = $repositoryManager->commitRevision($repository, ['foo' => 'bar'], 'I added some stuff');
@@ -321,7 +321,7 @@ Someone made a mistake? Just reject the revision!
 
 ```php
 // Now we need the RepositoryManager
-$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+$repositoryManager = $serviceManager->get('Athene2\Versioning\Manager\VersioningManager');
 
 $revision = $repositoryManager->rejectRevision($repository, 5, 'Sorry but there are too many mistakes!');
 
@@ -335,7 +335,7 @@ Do you approve of a certain revision? Go ahead and check it out!
 
 ```php
 // Now we need the RepositoryManager
-$repositoryManager = $serviceManager->get('Versioning\Manager\VersioningManager');
+$repositoryManager = $serviceManager->get('Athene2\Versioning\Manager\VersioningManager');
 
 $revision = $repositoryManager->checkoutRevision($repository, 5, 'Fine job!');
 

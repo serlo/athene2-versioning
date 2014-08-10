@@ -1,12 +1,8 @@
 <?php
 
-$moduleName = 'Versioning';
+$moduleName = 'Athene2\Versioning';
 
-if ($moduleName === 'insert modulename here') {
-    throw new RuntimeException('Please define the name of the module!');
-}
-
-use CommonTest\Util\ServiceManagerFactory;
+use Athene2Test\ServiceManagerFactory;
 
 ini_set('error_reporting', E_ALL);
 
@@ -27,8 +23,7 @@ if (!isset($loader)) {
     throw new RuntimeException('vendor/autoload.php could not be found. Did you install via composer?');
 }
 
-$loader->add('CommonTest\\', __DIR__);
-$loader->add($moduleName . 'Test\\', __DIR__);
+$loader->add('Athene2Test\\', __DIR__);
 
 $configFiles = [
     __DIR__ . '/TestConfiguration.php',
@@ -45,4 +40,5 @@ foreach ($configFiles as $configFile) {
 
 ServiceManagerFactory::setApplicationConfig($config);
 ServiceManagerFactory::getServiceManager();
-unset($moduleName, $files, $file, $loader, $configFiles, $configFile, $config);
+new \Athene2\Versioning\Options\ModuleOptions([]);
+unset($files, $file, $loader, $configFiles, $configFile, $config);

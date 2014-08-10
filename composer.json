@@ -28,8 +28,6 @@
         "zendframework/zend-authentication": "~2.3",
         "zendframework/zend-validator": "~2.3",
         "doctrine/common": "~2.4",
-        "doctrine/doctrine-module": "~0.8",
-        "doctrine/doctrine-orm-module": "~0.8",
         "serlo-org/athene2-common": "dev-master",
         "zf-commons/zfc-rbac": "2.3"
     },
@@ -41,7 +39,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Versioning\\": "src/"
+            "Athene2\\Versioning\\": "src/"
         }
     }
 }

@@ -1,15 +1,18 @@
 <?php
 
+namespace Athene2Test\VersioningTest\Asset;
+
 use Athene2\Versioning\Entity\RepositoryInterface;
 use Athene2\Versioning\Entity\RevisionInterface;
 use ZfcRbac\Identity\IdentityInterface;
 
 /**
- * Class Revision
+ * Class RevisionFake
  *
- * @author Aeneas Rekkas
+ * @package CommonTest\Asset
+ * @author  Aeneas Rekkas
  */
-class RevisionExample implements RevisionInterface
+class RevisionFake implements RevisionInterface
 {
     /**
      * @var mixed

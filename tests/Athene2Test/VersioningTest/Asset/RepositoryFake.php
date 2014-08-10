@@ -1,14 +1,16 @@
 <?php
+namespace Athene2Test\VersioningTest\Asset;
 
 use Athene2\Versioning\Entity\RepositoryInterface;
 use Athene2\Versioning\Entity\RevisionInterface;
 
 /**
- * Class Repository
+ * Class RepositoryFake
  *
- * @author Aeneas Rekkas
+ * @package VersioningTest\Asset
+ * @author  Aeneas Rekkas
  */
-class RepositoryExample implements RepositoryInterface
+class RepositoryFake implements RepositoryInterface
 {
     /**
      * @var array|RevisionInterface[]
@@ -38,7 +40,7 @@ class RepositoryExample implements RepositoryInterface
      */
     public function createRevision()
     {
-        return new Revision();
+        return new RevisionFake();
     }
 
     /**

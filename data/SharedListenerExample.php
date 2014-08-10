@@ -3,13 +3,13 @@
 use Zend\EventManager\Event;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\SharedListenerAggregateInterface;
-use Versioning\Event\VersioningEvent;
+use Athene2\Versioning\Event\VersioningEvent;
 
 class SharedListenerExample implements SharedListenerAggregateInterface
 {
     public function attachShared(SharedEventManagerInterface $events)
     {
-        $class = 'Versioning\Manager\RepositoryManager';
+        $class = 'Athene2\Versioning\Manager\RepositoryManager';
 
         // Looks like everything worked out fine!
         $events->attach($class, VersioningEvent::COMMIT, [$this, 'onCommit']);

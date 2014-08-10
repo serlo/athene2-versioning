@@ -1,6 +1,6 @@
 <?php
 
-namespace Versioning;
+namespace Athene2\Versioning;
 
 /**
  * @author Aeneas Rekkas
@@ -15,7 +15,7 @@ return [
     'di'              => [
         'instance' => [
             'preferences' => [
-                'Versioning\Manager\RepositoryManagerInterface' => 'Versioning\RepositoryManager'
+                'Athene2\Versioning\Manager\RepositoryManagerInterface' => 'Athene2\Versioning\RepositoryManager'
             ],
         ]
     ]
